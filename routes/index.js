@@ -2,6 +2,22 @@ var express = require('express');
 var router = express.Router();
 var request = require('request');
 var config = require('../config');
+var addrs = require('email-addresses');
+
+function emailDomainIsAllowed(email) {
+  if (!config.emailDomain) {
+    return true;
+  }
+  var parsedEmail = addrs.parseOneAddress(email);
+  return parsedEmail.domain.toLowerCase() == config.emailDomain.toLowerCase();
+}
+
+function emailOk(email) {
+  if (!email) {
+    return false;
+  }
+  return emailDomainIsAllowed(email);
+}
 
 router.get('/', function(req, res) {
   res.setLocale(config.locale);
@@ -11,7 +27,7 @@ router.get('/', function(req, res) {
 });
 
 router.post('/invite', function(req, res) {
-  if (req.body.email && (!config.inviteToken || (!!config.inviteToken && req.body.token === config.inviteToken))) {
+  if (emailOk(req.body.email) && (!config.inviteToken || (!!config.inviteToken && req.body.token === config.inviteToken))) {
     function doInvite() {
       request.post({
           url: 'https://'+ config.slackUrl + '/api/users.admin.invite',
@@ -85,6 +101,10 @@ router.post('/invite', function(req, res) {
     var errMsg = [];
     if (!req.body.email) {
       errMsg.push('your email is required');
+    }
+
+    if (!emailDomainIsAllowed(req.body.email)) {
+      errMsg.push('you must have an approved email domain');
     }
 
     if (!!config.inviteToken) {

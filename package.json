@@ -10,6 +10,7 @@
     "cookie-parser": "^1.4.0",
     "debug": "^2.2.0",
     "dotenv": "^2.0.0",
+    "email-addresses": "^3.0.1",
     "express": "^4.13.0",
     "i18n": "^0.7.0",
     "jade": "^1.11.0",

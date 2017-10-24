@@ -20,4 +20,5 @@ module.exports = {
   recaptchaSecretKey: process.env.RECAPTCHA_SECRET || null,
   // default locale
   locale: process.env.LOCALE || "en",
+  emailDomain: process.env.EMAIL_DOMAIN || ''
 };
